@@ -44,7 +44,7 @@ contract ScamSwap{
     }
 
     function getBalanceAddress(address _address) public view returns (uint256) {
-        return address(_address).balance ;
+        return address(_address).balance / 1 ether ;
     }
     
     function setSalesPrice(uint256 _salesPrice) public isAdmin{
