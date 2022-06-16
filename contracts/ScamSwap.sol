@@ -81,7 +81,9 @@ contract ScamSwap{
     } 
        
     function purchase(uint256 amountTokens) public payable{
-        require(amountTokens > 0 , "The value entered must not be zero!");
+        require(amountTokens > 0 , "The quantity of input tokens must not be zero!");
+        require(msg.value > 0 , "The value entered must not be zero!");
+
         require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Insuficiente quantidade de tokens na Vendi Machine para a compra!");
         //chamada ao balance não funciona, retorna valor errado - require(address(msg.sender).balance >= amountTokens * purchasePrice, "Insuficiente quantidade de ethers na sua carteira para a compra!");
         require(msg.value >= amountTokens * purchasePrice, "Valor enviado insuficiente para a compra");
