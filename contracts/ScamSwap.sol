@@ -1,4 +1,4 @@
-import "./ScamCoin.sol";
+import "./Scamcoin.sol";
 // SPDX-License-Identifier: GPL-3.0
 
 pragma solidity ^0.8.0;
@@ -22,11 +22,11 @@ contract ScamSwap{
     }
 
     function getBalanceTokens() public view returns (uint256) {
-        return ScamCoin(tokenAddress).balanceOf(address(this));
+        return Scamcoin(tokenAddress).balanceOf(address(this));
     }
 
     function getBalanceTokensForAddress(address _address) public view returns (uint256) {
-        return ScamCoin(tokenAddress).balanceOf(_address);
+        return Scamcoin(tokenAddress).balanceOf(_address);
     }
 
     function getBalanceEthers() public view returns (uint256) {
@@ -67,7 +67,7 @@ contract ScamSwap{
     function restockTokens(uint256 amountTokens) public isAdmin{
         require(amountTokens > 0 , "The value entered must not be zero!"); 
         require(getBalanceTokensForAddress(msg.sender) >= amountTokens , "Nao tem tokens suficiente!");  
-        require(ScamCoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens), "Tranferencia de tokens falhou!");
+        require(Scamcoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens), "Tranferencia de tokens falhou!");
     }
 
     function sales(uint256 amountTokens) public payable{
@@ -75,7 +75,7 @@ contract ScamSwap{
         require(getBalanceTokensForAddress(msg.sender) > 0, "User wallet has no tokens!");
         require(getBalanceTokensForAddress(msg.sender) >= amountTokens, "There are not enough tokens in the wallet for the sale!");
         require(address(this).balance >= amountTokens * salesPrice, "Insuficiente saldo de ethers na Vending Machine");     
-        require(ScamCoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens), "Tranferencia de tokens falhou!");
+        require(Scamcoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens), "Tranferencia de tokens falhou!");
         payable(msg.sender).transfer(amountTokens * salesPrice);
         //todo colocar evento
     } 
@@ -85,7 +85,7 @@ contract ScamSwap{
         require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Insuficiente quantidade de tokens na Vendi Machine para a compra!");
         //chamada ao balance não funciona, retorna valor errado - require(address(msg.sender).balance >= amountTokens * purchasePrice, "Insuficiente quantidade de ethers na sua carteira para a compra!");
         require(msg.value >= amountTokens * purchasePrice, "Valor enviado insuficiente para a compra");
-        require(ScamCoin(tokenAddress).transfer( msg.sender, amountTokens), "Tranferencia de tokens falhou!");
+        require(Scamcoin(tokenAddress).transfer( msg.sender, amountTokens), "Tranferencia de tokens falhou!");
         //Devolve o troco se o usuário, se enviou um valor maior do que deveria seer pago!
         if(msg.value > (amountTokens * purchasePrice)){
            uint256  payback = msg.value - (amountTokens * purchasePrice);

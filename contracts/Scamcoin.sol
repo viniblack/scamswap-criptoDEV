@@ -17,14 +17,14 @@ interface IERC20 {
 
 }
 
-contract ScamCoin is IERC20 {
+contract Scamcoin is IERC20 {
 
      // Enum
     enum Status { PAUSED, ACTIVE, CANCELLED }
 
     //Properties
     address private owner;
-    string public constant name = "ScamCoin";
+    string public constant name = "Scamcoin";
     string public constant symbol = "SCN";
     uint8 public constant decimals = 18;  //Default dos exemplos é sempre 18
     uint256 private totalsupply;
