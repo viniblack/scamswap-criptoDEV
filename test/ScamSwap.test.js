@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
-// O Comprador deve ser possivel comprar tokens com ethers.
 // O Vendedor deve ser possivel vender tokens por ethers.
 // O administrador deve ser capaz de reabastecer a maquina com tokens e ethers.
 // O adminsitrador deve ser capaz de sacar o saldo em ethers
@@ -41,6 +40,26 @@ describe('Scam Swap contract', function () {
 
 		expect(await token.balanceOf(account1.address)).to.equal(transferedValue);
 		expect(await token.balanceOf(scamSwap.address)).to.equal(companyBox - transferedValue);
+
+	});
+
+  it('The seller must be able to sell tokens for ethers.', async function () {
+		const companyBox = 1000;
+		const transferedValue = 10;
+		const restock = await scamSwap.restockTokens(companyBox);
+		await restock.wait();
+
+		const purchaseTransaction = await scamSwap.connect(account1).purchase(transferedValue, {value: ethers.utils.parseEther(String(transferedValue * 2))});
+     
+		await purchaseTransaction.wait();
+
+    
+    expect(await token.balanceOf(account1.address)).to.equal(transferedValue);
+
+    const salesTransaction = await scamSwap.connect(account1).sales(transferedValue);
+    salesTransaction.wait();
+
+    expect(await token.balanceOf(account1.address)).to.equal(0);
 
 	});
 
