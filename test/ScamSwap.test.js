@@ -7,8 +7,8 @@ describe('Scam Swap contract', function () {
 	beforeEach(async () => {
 		[owner, account1, account2, ...accounts] = await ethers.getSigners();
 
-		const ScamCoin = await ethers.getContractFactory('ScamCoin');
-		token = await ScamCoin.deploy(10000);
+		const Scamcoin = await ethers.getContractFactory('Scamcoin');
+		token = await Scamcoin.deploy(10000);
 		await token.deployed();
 
 		const ScamSwap = await ethers.getContractFactory('ScamSwap');
