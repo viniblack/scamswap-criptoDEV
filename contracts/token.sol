@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity ^0.8.0;
 
 interface IERC20 {
 
@@ -10,8 +10,6 @@ interface IERC20 {
 
     //Implementado
     event Transfer(address from, address to, uint256 value);
-    event Burn(address owner, uint256 value, uint256 supply);
-    event Mint(address owner, uint256 BalanceOwner, uint256 amount, uint256 supply);
 
     //Não está implementado (ainda)
     //event Approval(address owner, address spender, uint256 value);
@@ -27,7 +25,7 @@ contract ScamCoin is IERC20 {
     address private owner;
     string public constant name = "ScamCoin";
     string public constant symbol = "SCN";
-    uint8 public constant decimals = 3;  //Default dos exemplos é sempre 18
+    uint8 public constant decimals = 18;  //Default dos exemplos é sempre 18
     uint256 private totalsupply;
     Status contractState;
     uint256 valorToken;
@@ -40,14 +38,22 @@ contract ScamCoin is IERC20 {
         _;
     }
 
+    modifier isActive() {
+        require(contractState == Status.ACTIVE, "Contract is not Active!");
+        _;
+    }
+
+    // Events
+    event Burn(address owner, uint256 value, uint256 supply);
+    event Mint(address owner, uint256 BalanceOwner, uint256 amount, uint256 supply);
+
  
     //Constructor
     constructor(uint256 total) {
         owner = msg.sender;
         totalsupply = total;
         addressToBalance[msg.sender] = totalsupply;
-        contractState = Status.PAUSED;
-        valorToken = 1 ether;
+        contractState = Status.ACTIVE;
     }
 
     //Public Functions
@@ -59,7 +65,7 @@ contract ScamCoin is IERC20 {
         return addressToBalance[tokenOwner];
     }
 
-    function transfer(address receiver, uint256 quantity) public override returns(bool) {
+    function transfer(address receiver, uint256 quantity) public isActive override returns(bool) {
         require(quantity <= addressToBalance[msg.sender], "Insufficient Balance to Transfer");
         addressToBalance[msg.sender] -= quantity;
         addressToBalance[receiver] += quantity;
@@ -67,16 +73,6 @@ contract ScamCoin is IERC20 {
         emit Transfer(msg.sender, receiver, quantity);
         return true;
     }
-
-    function cotacao(uint256 valor) public isOwner {
-        valorToken = valor;
-    }
-
-    // function valorT(uint256 teste) public view returns(bool){
-        
-    //     require(valorToken == ether(teste));
-    //     return true;
-    // }
 
     function state() public view returns(Status) {
         return contractState;
@@ -92,8 +88,8 @@ contract ScamCoin is IERC20 {
    
     }
 
-    function mint(uint256 amount) public isOwner {
-        require(contractState == Status.ACTIVE, "Contract is paused!");
+    function mint(uint256 amount) public isActive isOwner {
+
         require(amount > 0, "Invalid mint value.");
         
         totalsupply += amount;
@@ -103,8 +99,7 @@ contract ScamCoin is IERC20 {
     }
 
 
-    function burn(uint256 amount) public isOwner {
-        require(contractState == Status.ACTIVE, "Contract is paused!");
+    function burn(uint256 amount) public isActive isOwner {
         require(amount > 0, "Invalid burn value.");
         require(totalSupply() >= amount, "The amount exceeds your balance.");
         totalsupply -= amount;
