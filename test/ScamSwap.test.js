@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
-// O adminsitrador deve ser capaz de sacar o saldo em ethers
 // O administrador deve ser capaz de redefinir o valor dos tokens para compra.
 // O administrador deve ser capaz de redefinir o valor dos tokens para venda.
 // Não deve ser possivel comprar tokens com valor zero.
@@ -30,11 +29,9 @@ describe('Scam Swap contract', function () {
 		const restock = await scamSwap.restockTokens(companyBox);
 		await restock.wait();
 
-		const transactionOne = await scamSwap
-			.connect(account1)
-			.purchase(transferedValue, {
-				value: ethers.utils.parseEther(String(transferedValue * 2)),
-			});
+		const transactionOne = await scamSwap.connect(account1).purchase(transferedValue, {
+			value: ethers.utils.parseEther(String(transferedValue * 2)),
+		});
 
 		await transactionOne.wait();
 
@@ -48,11 +45,9 @@ describe('Scam Swap contract', function () {
 		const restock = await scamSwap.restockTokens(companyBox);
 		await restock.wait();
 
-		const purchaseTransaction = await scamSwap
-			.connect(account1)
-			.purchase(transferedValue, {
-				value: ethers.utils.parseEther(String(transferedValue * 2)),
-			});
+		const purchaseTransaction = await scamSwap.connect(account1).purchase(transferedValue, {
+			value: ethers.utils.parseEther(String(transferedValue * 2)),
+		});
 
 		await purchaseTransaction.wait();
 
@@ -81,40 +76,57 @@ describe('Scam Swap contract', function () {
 
 	it('The admin must be able to withdraw the balance in ethers', async function () {
 		const companyBox = 100;
-    const beforeWithdraw = await scamSwap.getBalanceAddress(owner.address)
+		const beforeWithdraw = await scamSwap.getBalanceAddress(owner.address);
 		const restock = await scamSwap.restockTokens(1000);
 		await restock.wait();
 
+		const purchaseTransaction1 = await scamSwap
+			.connect(account1)
+			.purchase(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
+		await purchaseTransaction1.wait();
 
-		const purchaseTransaction1 = await scamSwap.connect(account1).purchase(companyBox/2, {value: ethers.utils.parseEther(String(companyBox))})
-    await purchaseTransaction1.wait();
+		const purchaseTransaction2 = await scamSwap
+			.connect(account2)
+			.purchase(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
+		await purchaseTransaction2.wait();
 
-    const purchaseTransaction2 = await scamSwap.connect(account2).purchase(companyBox/2, {value: ethers.utils.parseEther(String(companyBox))})
-    await purchaseTransaction2.wait();
+		const purchaseTransaction3 = await scamSwap
+			.connect(accounts[0])
+			.purchase(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
+		await purchaseTransaction3.wait();
 
-    const purchaseTransaction3 = await scamSwap.connect(accounts[0]).purchase(companyBox/2, {value: ethers.utils.parseEther(String(companyBox))})
-    await purchaseTransaction3.wait();
-    
-    const withdraw1 = await scamSwap.withdrawEthers(owner.address, 50);
-    await withdraw1.wait()
+		const withdraw1 = await scamSwap.withdrawEthers(owner.address, 50);
+		await withdraw1.wait();
 
-    let currentBalanceOwner =  Number(beforeWithdraw) + 50;
+		let currentBalanceOwner = Number(beforeWithdraw) + 50;
 
-    expect(await scamSwap.getBalanceAddress(owner.address)).to.be.equal(currentBalanceOwner)
+		expect(await scamSwap.getBalanceAddress(owner.address)).to.be.equal(currentBalanceOwner);
 
-    const withdraw2 = await scamSwap.withdrawEthers(owner.address, 100);
-    await withdraw2.wait()
+		const withdraw2 = await scamSwap.withdrawEthers(owner.address, 100);
+		await withdraw2.wait();
 
-    currentBalanceOwner = Number(currentBalanceOwner) + 100;
+		currentBalanceOwner = Number(currentBalanceOwner) + 100;
 
-    expect(await scamSwap.getBalanceAddress(owner.address)).to.be.equal(currentBalanceOwner)
+		expect(await scamSwap.getBalanceAddress(owner.address)).to.be.equal(currentBalanceOwner);
 
-    const withdraw3 = await scamSwap.withdrawAllEthers();
-    await withdraw3.wait()
+		const withdraw3 = await scamSwap.withdrawAllEthers();
+		await withdraw3.wait();
 
-    currentBalanceOwner = Number(currentBalanceOwner) + 150;
+		currentBalanceOwner = Number(currentBalanceOwner) + 150;
 
-    expect(await scamSwap.getBalanceAddress(owner.address)).to.be.equal(currentBalanceOwner)
+		expect(await scamSwap.getBalanceAddress(owner.address)).to.be.equal(currentBalanceOwner);
+	});
 
+	it('The administrator should be able to reset the value of the tokens for purchase.', async function () {
+    const newPrice = 3
+		const previousPurchasePrice = await scamSwap.getPurchasePrice();
+
+		const changeCotation = await scamSwap.setPurchasePrice(newPrice);
+		await changeCotation.wait();
+
+    const currentPurchasePrice = await scamSwap.getPurchasePrice();
+
+    expect(currentPurchasePrice).to.be.equal(newPrice);
+    expect(currentPurchasePrice != previousPurchasePrice).to.be.equal(true);
 	});
 });

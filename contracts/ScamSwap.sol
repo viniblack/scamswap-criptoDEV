@@ -40,7 +40,7 @@ contract ScamSwap{
     }
 
      function getPurchasePrice() public view returns (uint256) {
-        return purchasePrice;
+        return purchasePrice / 1 ether;
     }
 
     function getBalanceAddress(address _address) public view returns (uint256) {
