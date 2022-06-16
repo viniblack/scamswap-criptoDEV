@@ -33,6 +33,8 @@ contract ScamSwap{
         return address(this).balance;
     }
 
+
+
      function getSalesPrice() public view returns (uint256) {
         return salesPrice;
     }
@@ -41,7 +43,7 @@ contract ScamSwap{
         return purchasePrice;
     }
 
-    function getBanlanceAddress(address _address) public view returns (uint256) {
+    function getBalanceAddress(address _address) public view returns (uint256) {
         return address(_address).balance ;
     }
     
@@ -83,7 +85,7 @@ contract ScamSwap{
         require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Insuficiente quantidade de tokens na Vendi Machine para a compra!");
         //chamada ao balance não funciona, retorna valor errado - require(address(msg.sender).balance >= amountTokens * purchasePrice, "Insuficiente quantidade de ethers na sua carteira para a compra!");
         require(msg.value >= amountTokens * purchasePrice, "Valor enviado insuficiente para a compra");
-        require(ScamCoin(tokenAddress).transferFrom(address(this), msg.sender, amountTokens), "Tranferencia de tokens falhou!");
+        require(ScamCoin(tokenAddress).transfer( msg.sender, amountTokens), "Tranferencia de tokens falhou!");
         //Devolve o troco se o usuário, se enviou um valor maior do que deveria seer pago!
         if(msg.value > (amountTokens * purchasePrice)){
            uint256  payback = msg.value - (amountTokens * purchasePrice);
