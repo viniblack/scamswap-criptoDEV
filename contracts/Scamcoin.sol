@@ -17,14 +17,14 @@ interface IERC20 {
 
 }
 
-contract ScamCoin is IERC20 {
+contract Scamcoin is IERC20 {
 
      // Enum
     enum Status { PAUSED, ACTIVE, CANCELLED }
 
     //Properties
     address private owner;
-    string public constant name = "ScamCoin";
+    string public constant name = "Scamcoin";
     string public constant symbol = "SCN";
     uint8 public constant decimals = 18;  //Default dos exemplos é sempre 18
     uint256 private totalsupply;
@@ -48,7 +48,7 @@ contract ScamCoin is IERC20 {
     event Burn(address owner, uint256 value, uint256 supply);
     event Mint(address owner, uint256 BalanceOwner, uint256 amount, uint256 supply);
 
- 
+
     //Constructor
     constructor(uint256 total) {
         owner = msg.sender;
@@ -74,7 +74,12 @@ contract ScamCoin is IERC20 {
         return true;
     }
 
-    function transferFrom(address from, address to, uint amount)public override returns(bool) { 
+    function transferFrom(address from, address to, uint amount)public isActive override returns(bool) {
+        // TODO: Saber se quem esta chamando a função tem permição para enviar o token de uma cartira(from) para outra(to)
+        
+        require(amount > 0, "Tranfer value invalid.");
+        require(amount <= balanceOf(from), "Insufficient Balance to Transfer");
+
         //allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(tokens);
         //require(amount <= balances[owner]);
         //require(amount <= allowed[owner][msg.sender]);
@@ -91,14 +96,14 @@ contract ScamCoin is IERC20 {
 
     function setState(uint8 status) public isOwner {
         require(status <= 1, "Invalid status");
-        if(status == 1){
-            require(contractState != Status.ACTIVE, "The status is already ACTIVE");
-            contractState = Status.ACTIVE;
-        }else {
+        if(status == 0) {
             require(contractState != Status.PAUSED, "The status is already PAUSED");
             contractState = Status.PAUSED;
+        }else if(status == 1){
+            require(contractState != Status.ACTIVE, "The status is already ACTIVE");
+            contractState = Status.ACTIVE;
         }
-   
+
     }
 
     function mint(uint256 amount) public isActive isOwner {
@@ -115,6 +120,8 @@ contract ScamCoin is IERC20 {
     function burn(uint256 amount) public isActive isOwner {
         require(amount > 0, "Invalid burn value.");
         require(totalSupply() >= amount, "The amount exceeds your balance.");
+        require(balanceOf(owner) >= amount, "The value exceeds the owner's available amount");
+
         totalsupply -= amount;
         addressToBalance[owner] -= amount;
 
