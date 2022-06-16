@@ -4,7 +4,7 @@
   "description": "<p align=\"center\">\r   <img src=\"https://media.tenor.com/images/63dc70b43a949617fdfa3447868d534d/tenor.gif\" alt=\"Hulk Smart\"/>\r </p>",
   "main": "index.js",
   "scripts": {
-    "test": "npx hardhat test ",
+    "test": "npx hardhat test",
     "compile": "npx hardhat compile"
   },
   "repository": {

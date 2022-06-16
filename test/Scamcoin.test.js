@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe.only("Scamcoin contract", function () {
+describe("Scamcoin contract", function () {
   let owner, account1, account2, account3;
   let CryptoToken, token;
 
