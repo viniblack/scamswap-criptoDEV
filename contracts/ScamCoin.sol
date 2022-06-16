@@ -48,7 +48,7 @@ contract ScamCoin is IERC20 {
     event Burn(address owner, uint256 value, uint256 supply);
     event Mint(address owner, uint256 BalanceOwner, uint256 amount, uint256 supply);
 
- 
+
     //Constructor
     constructor(uint256 total) {
         owner = msg.sender;
@@ -74,10 +74,11 @@ contract ScamCoin is IERC20 {
         return true;
     }
 
-    function transferFrom(address from, address to, uint amount)public isActive override returns(bool) { 
-        // TODO: verificar se a carteira de quem envia tem saldo suficiente
-        // TODO: verificar se a quantidade enviada não é 0  
+    function transferFrom(address from, address to, uint amount)public isActive override returns(bool) {
         // TODO: Saber se quem esta chamando a função tem permição para enviar o token de uma cartira(from) para outra(to)
+        
+        require(amount > 0, "Tranfer value invalid.");
+        require(amount <= balanceOf(from), "Insufficient Balance to Transfer");
 
         //allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(tokens);
         //require(amount <= balances[owner]);
@@ -102,7 +103,7 @@ contract ScamCoin is IERC20 {
             require(contractState != Status.ACTIVE, "The status is already ACTIVE");
             contractState = Status.ACTIVE;
         }
-   
+
     }
 
     function mint(uint256 amount) public isActive isOwner {
@@ -119,7 +120,7 @@ contract ScamCoin is IERC20 {
     function burn(uint256 amount) public isActive isOwner {
         require(amount > 0, "Invalid burn value.");
         require(totalSupply() >= amount, "The amount exceeds your balance.");
-        require(addressToBalance[owner] >= amount, "The value exceeds the owner's available amount");
+        require(balanceOf(owner) >= amount, "The value exceeds the owner's available amount");
 
         totalsupply -= amount;
         addressToBalance[owner] -= amount;

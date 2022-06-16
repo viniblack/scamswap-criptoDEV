@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("Token contract", function () {
+describe("ScamCoin contract", function () {
   let owner, account1, account2, account3;
   let CryptoToken, token;
 
@@ -101,6 +101,23 @@ describe("Token contract", function () {
     expect(parseInt(currentBalanceOwner) + (amountSent * 3)).to.equal(modifiedBalanceOwner)
   })
 
+  it("checking a transaction if the tranfer value is more than 0", async function() {
+
+    await expect(token.transferFrom(account1.address, account2.address, 0)).to.be.revertedWith("Tranfer value invalid.")
+  
+  })
+
+  it("checking a transaction if there is insufficient balance to transfer", async function() {
+
+    amountSent = 100
+    amountSentFrom = 101
+
+    await token.transfer(account1.address, amountSent)
+
+    await expect(token.transferFrom(account1.address, account2.address, amountSentFrom)).to.be.revertedWith("Insufficient Balance to Transfer")
+  
+  })
+
   it("checking a transaction with insufficient balance", async function() {
     await expect(token.transfer(account1.address, 999999)).to.be.revertedWith('Insufficient Balance to Transfer')
   })
@@ -148,6 +165,11 @@ describe("Token contract", function () {
     expect(parseInt(currentBalanceOwner) + amount).to.equal(modifiedBalanceOwner)
   })
 
+  it("checking if the mint value is zero", async function () {
+
+    await expect(token.mint(0)).to.be.revertedWith("Invalid mint value.")
+  })
+
   it("checking if it is burning token the total supply and the owner's address", async function() {
     const currentTotalSupply = await token.totalSupply()
     const currentBalanceOwner = await token.balanceOf(owner.address)
@@ -162,6 +184,25 @@ describe("Token contract", function () {
 
     expect(parseInt(currentTotalSupply) - amount).to.equal(modifiedTotalSupply)
     expect(parseInt(currentBalanceOwner) - amount).to.equal(modifiedBalanceOwner)
+  })
+
+  it("checking if the burning value is zero", async function () {
+
+    await expect(token.burn(0)).to.be.revertedWith("Invalid burn value.")
+  })
+
+  // TODO: Perguntar ao JC se é necessario a verificação da carteira do owner ou somente do totalsuply.
+  it("checking if the burning value exceeds the total amount", async function () {
+
+    await expect(token.burn(99999)).to.be.revertedWith("The amount exceeds your balance.")
+  })
+
+  it("checking if the burning value exceeds the owner's balance", async function () {
+    await token.transfer(account1.address, 100)
+
+    let amountBurn = 10000
+
+    await expect(token.burn(amountBurn)).to.be.revertedWith("The value exceeds the owner's available amount")
   })
 
   it("checking if it's killing the contract", async function() {
