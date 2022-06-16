@@ -147,4 +147,11 @@ describe('Scam Swap contract', function () {
 			value: ethers.utils.parseEther(String(0)),
 		})).to.revertedWith("The value entered must not be zero!")
 	});
+
+  it('It is not possible to buy zero tokens', async function () {
+    const transferedValue = 0;
+		await expect( scamSwap.connect(account1).purchase(transferedValue, {
+			value: ethers.utils.parseEther(String(10)),
+		})).to.revertedWith("The quantity of input tokens must not be zero!")
+	});
 });
