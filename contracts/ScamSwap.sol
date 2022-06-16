@@ -36,7 +36,7 @@ contract ScamSwap{
 
 
      function getSalesPrice() public view returns (uint256) {
-        return salesPrice;
+        return salesPrice / 1 ether;
     }
 
      function getPurchasePrice() public view returns (uint256) {

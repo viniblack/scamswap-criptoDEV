@@ -1,13 +1,6 @@
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
-// O administrador deve ser capaz de redefinir o valor dos tokens para compra.
-// O administrador deve ser capaz de redefinir o valor dos tokens para venda.
-// Não deve ser possivel comprar tokens com valor zero.
-// Não deve ser possivel vender tokens com valor zero.
-// Não deve ser possivel reabastecer a maquina com tokens com valor zero.
-// Não deve ser possivel reabastecer a maquina com ethers com valor zero.
-
 describe('Scam Swap contract', function () {
 	let owner, account1, account2, accounts, token, scamSwap;
 
@@ -118,15 +111,33 @@ describe('Scam Swap contract', function () {
 	});
 
 	it('The administrator should be able to reset the value of the tokens for purchase.', async function () {
-    const newPrice = 3
+		const newPrice = 3;
 		const previousPurchasePrice = await scamSwap.getPurchasePrice();
 
 		const changeCotation = await scamSwap.setPurchasePrice(newPrice);
 		await changeCotation.wait();
 
-    const currentPurchasePrice = await scamSwap.getPurchasePrice();
+		const currentPurchasePrice = await scamSwap.getPurchasePrice();
 
-    expect(currentPurchasePrice).to.be.equal(newPrice);
-    expect(currentPurchasePrice != previousPurchasePrice).to.be.equal(true);
+		expect(currentPurchasePrice).to.be.equal(newPrice);
+		expect(currentPurchasePrice != previousPurchasePrice).to.be.equal(true);
+	});
+
+	// Não deve ser possivel comprar tokens com valor zero.
+	// Não deve ser possivel vender tokens com valor zero.
+	// Não deve ser possivel reabastecer a maquina com tokens com valor zero.
+	// Não deve ser possivel reabastecer a maquina com ethers com valor zero.
+
+	it('The administrator should be able to reset the value of the tokens for sale.', async function () {
+		const newPrice = 3;
+		const previousSalesPrice = await scamSwap.getSalesPrice();
+
+		const changeCotation = await scamSwap.setSalesPrice(newPrice);
+		await changeCotation.wait();
+
+		const currentSalesPrice = await scamSwap.getSalesPrice();
+
+		expect(currentSalesPrice).to.be.equal(newPrice);
+		expect(currentSalesPrice != previousSalesPrice).to.be.equal(true);
 	});
 });
