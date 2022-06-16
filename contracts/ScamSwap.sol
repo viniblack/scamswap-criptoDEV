@@ -3,7 +3,7 @@ import "./ScamCoin.sol";
 
 pragma solidity ^0.8.0;
 
-contract VendingMachine{
+contract ScamSwap{
     address payable public admin;
     uint256 private salesPrice =  1 ether;
     uint256 private purchasePrice = 2 ether; 
