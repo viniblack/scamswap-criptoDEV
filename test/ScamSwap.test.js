@@ -157,11 +157,16 @@ describe('Scam Swap contract', function () {
 	it('It should not be possible to sell tokens with zero value.', async function () {
 		const transferedValue = 0;
 		await expect(scamSwap.connect(account1).sales(transferedValue)).to.revertedWith(
-			"The quantity of input tokens must not be zero!"
+			'The quantity of input tokens must not be zero!'
 		);
 	});
 
-	// Não deve ser possivel vender tokens com valor zero.
+	it('It should not be possible to replenish the machine with zero-valued tokens.', async function () {
+		const companyBox = 0;
+
+    await expect( scamSwap.restockTokens(companyBox)).to.revertedWith("The value entered must not be zero!")
+	});
+
 	// Não deve ser possivel reabastecer a maquina com tokens com valor zero.
 	// Não deve ser possivel reabastecer a maquina com ethers com valor zero.
 });
