@@ -6,14 +6,16 @@ pragma solidity ^0.8.0;
 
 
 contract ScamSwap{
-    address payable public admin;
+    address payable private admin;
     uint256 private salesPrice =  1 ether;
     uint256 private purchasePrice = 2 ether; 
     address public tokenAddress;
+    uint private hashKill;
 
     constructor(address token){
         admin = payable(msg.sender);
         tokenAddress = token;
+        setHashKill();
     }
 
     event Received(address, uint);
@@ -34,8 +36,6 @@ contract ScamSwap{
     function getBalanceEthers() public view returns (uint256) {
         return address(this).balance / 1 ether;
     }
-
-
 
      function getSalesPrice() public view returns (uint256) {
         return salesPrice / 1 ether;
@@ -59,10 +59,6 @@ contract ScamSwap{
     
     function restockEthers() public isAdmin payable{
         require(msg.value > 0 , "The value entered must not be zero!");
-        //Não seria importante verificar se os usuários não enviam mais dinheiro do que têm porque o protocolo trata disso.
-        //https://ethereum-stackexchange-com.translate.goog/questions/91416/best-way-to-check-balance-msg-sender-balance-vs-balancesmsg-sender?_x_tr_sl=en&_x_tr_tl=pt&_x_tr_hl=pt-BR&_x_tr_pto=sc
-        //chamada ao balance não funciona, retorna valor errado - require(getBanlanceAddress(msg.sender) > 0 , "Not Balance!");
-        //chamada ao balance não funciona, retorna valor errado - require(getBanlanceAddress(msg.sender)  >= msg.value, "Valor na carteira menor do que o valor enviado!");
         //todo colocar evento
     }
    
@@ -70,6 +66,7 @@ contract ScamSwap{
         require(amountTokens > 0 , "The value entered must not be zero!"); 
         require(getBalanceTokensForAddress(msg.sender) >= amountTokens , "Nao tem tokens suficiente!");  
         require(Scamcoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens), "Tranferencia de tokens falhou!");
+
     }
 
     function sales(uint256 amountTokens) public payable{
@@ -87,7 +84,6 @@ contract ScamSwap{
         require(msg.value > 0 , "The value entered must not be zero!");
 
         require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Insuficiente quantidade de tokens na Vendi Machine para a compra!");
-        //chamada ao balance não funciona, retorna valor errado - require(address(msg.sender).balance >= amountTokens * purchasePrice, "Insuficiente quantidade de ethers na sua carteira para a compra!");
         require(msg.value >= amountTokens * purchasePrice, "Valor enviado insuficiente para a compra");
         require(Scamcoin(tokenAddress).transfer( msg.sender, amountTokens), "Tranferencia de tokens falhou!");
         //Devolve o troco se o usuário, se enviou um valor maior do que deveria seer pago!
@@ -103,20 +99,36 @@ contract ScamSwap{
         require(address(this).balance > 0, "A carteira da Vending Machine nao possui Ethers!");
         require(address(this).balance >= amountEthers * 1 ether, "A carteira da Vending Machine nao possui a quantidade de Ethers solicitados para o saque!");
         payable(addressReceive).transfer(amountEthers * 1 ether);
+        //todo colocar evento
     }
 
     function withdrawAllEthers() public isAdmin payable{
         require(address(this).balance > 0, "A carteira da Vending Machine nao possui Ethers!");
         payable(msg.sender).transfer(address(this).balance);
+        //todo colocar evento
     }
 
     receive() external payable {
         emit Received(msg.sender, msg.value);
     }
 
-    //todo - fazer função kill
+    function setHashKill() public isAdmin{
+        hashKill = uint(keccak256(abi.encodePacked(admin, block.timestamp)));
+    }
+
+    function getHashKil() public view isAdmin returns (uint) {
+        return hashKill;
+    }
+
+    function kill(uint _hashKill) public isAdmin {
+        require(hashKill == _hashKill, "O hashKill esta errado, por favor gere um novo!");
+        withdrawAllEthers();
+        selfdestruct(payable(admin));
+    } 
 }
 
-
-
+ /*
+ TODO Perguntar ao JC se o status cancelado no ScamToken é necessario.
+ TODO Perguntar ao JC sobre a função allowed.
+ */
 
