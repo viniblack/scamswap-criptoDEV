@@ -90,10 +90,12 @@ contract ScamCoin is IERC20 {
     }
 
     function setState(uint8 status) public isOwner {
-        require(status == 1 || status == 0, "Invalid status");
+        require(status <= 1, "Invalid status");
         if(status == 1){
+            require(contractState != Status.ACTIVE, "The status is already ACTIVE");
             contractState = Status.ACTIVE;
         }else {
+            require(contractState != Status.PAUSED, "The status is already PAUSED");
             contractState = Status.PAUSED;
         }
    
