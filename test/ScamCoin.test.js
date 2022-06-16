@@ -1,9 +1,5 @@
-const {
-  expect
-} = require("chai");
-const {
-  ethers
-} = require("hardhat");
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
 describe("Token contract", function () {
   let owner, account1, account2, account3;
@@ -67,7 +63,7 @@ describe("Token contract", function () {
 
     const modifiedBalanceOwner = await token.balanceOf(owner.address)
 
-    const totalAmountSent = amountSent.reduce((soma, i) => parseInt(soma) + parseInt(i))
+    const totalAmountSent = amountSent.reduce((previousValue, currentValue) => parseInt(previousValue) + parseInt(currentValue))
 
     expect(parseInt(currentBalanceOwner) - totalAmountSent).to.equal(modifiedBalanceOwner)
   })
@@ -106,10 +102,10 @@ describe("Token contract", function () {
   })
 
   it("checking a transaction with insufficient balance", async function() {
-    await expect(token.transfer(account1.address, 21000001)).to.be.revertedWith('Insufficient Balance to Transfer')
+    await expect(token.transfer(account1.address, 999999)).to.be.revertedWith('Insufficient Balance to Transfer')
   })
 
-  it("checking the current state", async function() {
+  it("checking if the contract is active", async function() {
     const expectedState = 1
 
     expect(await token.state()).to.equal(expectedState)
@@ -128,7 +124,7 @@ describe("Token contract", function () {
   })
 
   it("checking overflows when changing state", async function () {
-    await expect(token.setState(3)).to.be.revertedWith("Invalid status")
+    await expect(token.setState(2)).to.be.revertedWith("Invalid status")
     await expect(token.setState(1)).to.be.revertedWith("The status is already ACTIVE")
 
     await token.setState(0)
@@ -182,7 +178,7 @@ describe("Token contract", function () {
     expect(token.connect(account1).mint(1000)).to.be.revertedWith("Sender is not owner!")
     expect(token.connect(account1).burn(1000)).to.be.revertedWith("Sender is not owner!")
     expect(token.connect(account1).kill()).to.be.revertedWith("Sender is not owner!")
-    expect(token.connect(account1).setState(2)).to.be.revertedWith("Sender is not owner!")
+    expect(token.connect(account1).setState(1)).to.be.revertedWith("Sender is not owner!",)
   })
 
   it("checking if status is active", async function () {
@@ -191,7 +187,6 @@ describe("Token contract", function () {
     await expect(token.transfer(account1.address, 1000)).to.be.revertedWith("Contract is not Active!")
     await expect(token.mint(1000)).to.be.revertedWith("Contract is not Active!")
     await expect(token.burn(1000)).to.be.revertedWith("Contract is not Active!")
-
   })
 
 });
