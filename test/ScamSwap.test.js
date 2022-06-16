@@ -23,21 +23,25 @@ describe('Scam Swap contract', function () {
 		await token.deployed();
 
 		const ScamSwap = await ethers.getContractFactory('ScamSwap');
-		scamSwap = await ScamSwap.deploy(token.address);
+		scamSwap = await ScamSwap.deploy(token.address)
 		await scamSwap.deployed();
+
+    
 	});
 
-	it('O Comprador deve ser possivel comprar tokens com ethers.', async function () {
+	it('The buyer must be able to buy tokens with ethers.', async function () {
 		const companyBox = 1000;
 		const transferedValue = 10;
 		const restock = await scamSwap.restockTokens(companyBox);
 		await restock.wait();
 
-		const transactionOne = await scamSwap.connect(account1).purchase(transferedValue);
+		const transactionOne = await scamSwap.connect(account1).purchase(transferedValue, {value: ethers.utils.parseEther(String(transferedValue * 2))});
+     
 		await transactionOne.wait();
 
-		// expect(await token.balanceOf(account1.address)).to.equal(transferedValue);
-		// expect(await token.balanceOf(scamSwap.address)).to.equal(companyBox - transferedValue);
+		expect(await token.balanceOf(account1.address)).to.equal(transferedValue);
+		expect(await token.balanceOf(scamSwap.address)).to.equal(companyBox - transferedValue);
+
 	});
 
 	// it("checking if the total supply is incorrect and checking if the balance of an address is incorrect", async function() {
