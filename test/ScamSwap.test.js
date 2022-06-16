@@ -123,11 +123,6 @@ describe('Scam Swap contract', function () {
 		expect(currentPurchasePrice != previousPurchasePrice).to.be.equal(true);
 	});
 
-	// Não deve ser possivel comprar tokens com valor zero.
-	// Não deve ser possivel vender tokens com valor zero.
-	// Não deve ser possivel reabastecer a maquina com tokens com valor zero.
-	// Não deve ser possivel reabastecer a maquina com ethers com valor zero.
-
 	it('The administrator should be able to reset the value of the tokens for sale.', async function () {
 		const newPrice = 3;
 		const previousSalesPrice = await scamSwap.getSalesPrice();
@@ -141,17 +136,32 @@ describe('Scam Swap contract', function () {
 		expect(currentSalesPrice != previousSalesPrice).to.be.equal(true);
 	});
 
-  it('It should not be possible to buy tokens with zero value.', async function () {
-    const transferedValue = 10;
-		await expect( scamSwap.connect(account1).purchase(transferedValue, {
-			value: ethers.utils.parseEther(String(0)),
-		})).to.revertedWith("The value entered must not be zero!")
+	it('It should not be possible to buy tokens with zero value.', async function () {
+		const transferedValue = 10;
+		await expect(
+			scamSwap.connect(account1).purchase(transferedValue, {
+				value: ethers.utils.parseEther(String(0)),
+			})
+		).to.revertedWith('The value entered must not be zero!');
 	});
 
-  it('It is not possible to buy zero tokens', async function () {
-    const transferedValue = 0;
-		await expect( scamSwap.connect(account1).purchase(transferedValue, {
-			value: ethers.utils.parseEther(String(10)),
-		})).to.revertedWith("The quantity of input tokens must not be zero!")
+	it('It is not possible to buy zero tokens', async function () {
+		const transferedValue = 0;
+		await expect(
+			scamSwap.connect(account1).purchase(transferedValue, {
+				value: ethers.utils.parseEther(String(10)),
+			})
+		).to.revertedWith('The quantity of input tokens must not be zero!');
 	});
+
+	it('It should not be possible to sell tokens with zero value.', async function () {
+		const transferedValue = 0;
+		await expect(scamSwap.connect(account1).sales(transferedValue)).to.revertedWith(
+			"The quantity of input tokens must not be zero!"
+		);
+	});
+
+	// Não deve ser possivel vender tokens com valor zero.
+	// Não deve ser possivel reabastecer a maquina com tokens com valor zero.
+	// Não deve ser possivel reabastecer a maquina com ethers com valor zero.
 });

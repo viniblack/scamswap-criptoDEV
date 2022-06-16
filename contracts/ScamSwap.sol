@@ -71,7 +71,7 @@ contract ScamSwap{
     }
 
     function sales(uint256 amountTokens) public payable{
-        require(amountTokens > 0 , "The value entered must not be zero!");
+        require(amountTokens > 0 , "The quantity of input tokens must not be zero!");
         require(getBalanceTokensForAddress(msg.sender) > 0, "User wallet has no tokens!");
         require(getBalanceTokensForAddress(msg.sender) >= amountTokens, "There are not enough tokens in the wallet for the sale!");
         require(address(this).balance >= amountTokens * salesPrice, "Insuficiente saldo de ethers na Vending Machine");     
