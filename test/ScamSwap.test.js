@@ -167,6 +167,9 @@ describe('Scam Swap contract', function () {
     await expect( scamSwap.restockTokens(companyBox)).to.revertedWith("The value entered must not be zero!")
 	});
 
-	// Não deve ser possivel reabastecer a maquina com tokens com valor zero.
-	// Não deve ser possivel reabastecer a maquina com ethers com valor zero.
+  it('It should not be possible to refill the machine with ethers with a zero value.', async function () {
+		const companyBox = 0;
+
+    await expect( scamSwap.restockEthers({value: ethers.utils.parseEther(String(companyBox))})).to.revertedWith("The value entered must not be zero!")
+	});
 });
