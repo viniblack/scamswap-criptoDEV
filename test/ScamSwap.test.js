@@ -112,6 +112,24 @@ describe('Scam Swap contract', function () {
 				scamSwap.restockEthers({ value: ethers.utils.parseEther(String(companyBox)) })
 			).to.revertedWith('The value entered must not be zero!');
 		});
+
+		it('When successfully restocking ethers, you should check if the etherReceived event was issued. ', async function () {
+			const companyBox = 100;
+
+			const restockEthersScamSwap = await scamSwap.restockEthers({
+				value: ethers.utils.parseEther(String(companyBox)),
+			});
+
+			const infos = await restockEthersScamSwap.wait();
+
+			const data = infos.logs[0].data;
+
+			const [value] = ethers.utils.defaultAbiCoder.decode(['uint256'], data);
+
+			const emittedValue = parseInt(ethers.utils.formatEther(String(value)));
+
+			expect(emittedValue).to.be.equal(companyBox);
+		});
 	});
 
 	describe('Withdraw functions', async function () {
@@ -124,6 +142,8 @@ describe('Scam Swap contract', function () {
 			const purchaseTransaction1 = await scamSwap
 				.connect(account1)
 				.purchase(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
+
+			console.log(ethers.utils.parseEther(String(companyBox)));
 			await purchaseTransaction1.wait();
 
 			const purchaseTransaction2 = await scamSwap

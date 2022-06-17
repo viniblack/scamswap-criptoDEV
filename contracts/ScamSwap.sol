@@ -19,6 +19,7 @@ contract ScamSwap{
     }
 
     event Received(address, uint);
+    event ethersReceived(uint256);
 
     modifier isAdmin() {
         require(msg.sender == admin , "Sender is not admin!");
@@ -59,6 +60,7 @@ contract ScamSwap{
     
     function restockEthers() public isAdmin payable{
         require(msg.value > 0 , "The value entered must not be zero!");
+        emit ethersReceived(msg.value);
         //todo colocar evento
     }
    
