@@ -1,9 +1,7 @@
 import "./Scamcoin.sol";
-
 // SPDX-License-Identifier: GPL-3.0
+
 pragma solidity ^0.8.0;
-
-
 
 contract ScamSwap{
     address payable private admin;
@@ -35,7 +33,7 @@ contract ScamSwap{
     }
 
     function getBalanceEthers() public view returns (uint256) {
-        return address(this).balance / 1 ether;
+         return address(this).balance / 1 ether;
     }
 
      function getSalesPrice() public view returns (uint256) {
@@ -47,7 +45,7 @@ contract ScamSwap{
     }
 
     function getBalanceAddress(address _address) public view returns (uint256) {
-        return address(_address).balance / 1 ether ;
+        return address(_address).balance / 1 ether;
     }
     
     function setSalesPrice(uint256 _salesPrice) public isAdmin{
@@ -68,7 +66,6 @@ contract ScamSwap{
         require(amountTokens > 0 , "The value entered must not be zero!"); 
         require(getBalanceTokensForAddress(msg.sender) >= amountTokens , "Nao tem tokens suficiente!");  
         require(Scamcoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens), "Tranferencia de tokens falhou!");
-
     }
 
     function sales(uint256 amountTokens) public payable{
@@ -83,8 +80,7 @@ contract ScamSwap{
        
     function purchase(uint256 amountTokens) public payable{
         require(amountTokens > 0 , "The quantity of input tokens must not be zero!");
-        require(msg.value > 0 , "The value entered must not be zero!");
-
+        
         require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Insuficiente quantidade de tokens na Vendi Machine para a compra!");
         require(msg.value >= amountTokens * purchasePrice, "Valor enviado insuficiente para a compra");
         require(Scamcoin(tokenAddress).transfer( msg.sender, amountTokens), "Tranferencia de tokens falhou!");
@@ -129,8 +125,4 @@ contract ScamSwap{
     } 
 }
 
- /*
- TODO Perguntar ao JC se o status cancelado no ScamToken é necessario.
- TODO Perguntar ao JC sobre a função allowed.
- */
 
