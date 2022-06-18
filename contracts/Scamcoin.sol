@@ -13,18 +13,14 @@ interface IERC20 {
     function increaseAllowance(address spender, uint256 addedValue) external  returns (bool) ;
     function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) ;
 
-    //Implementado
     event Transfer(address from, address to, uint256 value);
     event Approval(address owner, address spender, uint256 value);
-
-    //Não está implementado (ainda)
-    //event Approval(address owner, address spender, uint256 value);
 
 }
 
 contract Scamcoin is IERC20 {
 
-     // Enum
+    // Enum
     enum Status { PAUSED, ACTIVE, CANCELLED }
 
     //Properties
@@ -73,6 +69,7 @@ contract Scamcoin is IERC20 {
 
     function approve(address delegate, uint256 numTokens) public override returns (bool) {
         allowed[msg.sender][delegate] = numTokens;
+
         emit Approval(msg.sender, delegate, numTokens);
         return true;
     }
@@ -83,23 +80,28 @@ contract Scamcoin is IERC20 {
     
     function increaseAllowance(address spender, uint256 addedValue) public override returns (bool){
         require(spender != address(0), "End.. invalido!");
+
         allowed[msg.sender][spender] +=  addedValue;
+
         emit Approval(msg.sender, spender, allowed[msg.sender][spender]);
         return true;
     }
 
    function decreaseAllowance(address spender, uint256 subtractedValue) public override returns (bool) {
         require(spender != address(0));
+
         allowed[msg.sender][spender] -= subtractedValue;
-        //allowed[msg.sender][spender] = allowed[msg.sender][spender].sub(subtractedValue);
+
         emit Approval(msg.sender, spender, allowed[msg.sender][spender]);
-         return true;
+        return true;
     }
 
     function transfer(address receiver, uint256 quantity) public isActive override returns(bool) {
         require(quantity <= addressToBalance[msg.sender], "Insufficient Balance to Transfer");
+
         addressToBalance[msg.sender] -= quantity;
         addressToBalance[receiver] += quantity;
+
         emit Transfer(msg.sender, receiver, quantity);
         return true;
     }
@@ -108,9 +110,11 @@ contract Scamcoin is IERC20 {
         require(amount > 0, "Tranfer value invalid is not zero.");
         require(amount <= balanceOf(from), "Insufficient Balance to Transfer");
         require(amount <= allowed[from][msg.sender], "Falhou no allowed");
+
         addressToBalance[from] -= amount;
         allowed[from][msg.sender] -= amount;
         addressToBalance[to] += amount;
+
         emit Transfer(from, to, amount);
         return true;
     }
@@ -121,6 +125,7 @@ contract Scamcoin is IERC20 {
 
     function setState(uint8 status) public isOwner {
         require(status <= 1, "Invalid status");
+
         if(status == 0) {
             require(contractState != Status.PAUSED, "The status is already PAUSED");
             contractState = Status.PAUSED;
@@ -128,19 +133,16 @@ contract Scamcoin is IERC20 {
             require(contractState != Status.ACTIVE, "The status is already ACTIVE");
             contractState = Status.ACTIVE;
         }
-
     }
 
     function mint(uint256 amount) public isActive isOwner {
-
         require(amount > 0, "Invalid mint value.");
-        
+
         totalsupply += amount;
         addressToBalance[owner] += amount;
-        
+
         emit Mint(owner,addressToBalance[owner], amount, totalSupply());       
     }
-
 
     function burn(uint256 amount) public isActive isOwner {
         require(amount > 0, "Invalid burn value.");
