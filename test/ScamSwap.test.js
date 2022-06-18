@@ -228,4 +228,26 @@ describe('Scam Swap contract', function () {
 			expect(currentSalesPrice != previousSalesPrice).to.be.equal(true);
 		});
 	});
+
+	describe('Kill and HashKill | checks', async function () {
+
+		it('You should not be able to kill with an invalid hashKill.', async function () {
+			const firstHK = await scamSwap.setHashKill();
+			await firstHK.wait();
+
+			const hashKill1 = await scamSwap.getHashKill();
+
+			const secondHK = await scamSwap.setHashKill();
+			await secondHK.wait();
+
+			const hashKill2 = await scamSwap.getHashKill();
+
+			const lastHK = await scamSwap.setHashKill();
+			await lastHK.wait();
+
+			expect(await scamSwap.getHashKill()).not.be.equal(hashKill1);
+			expect(await scamSwap.getHashKill()).not.be.equal(hashKill2);
+			expect(await scamSwap.getHashKill()).not.be.equal(0);
+		});
+	});
 });

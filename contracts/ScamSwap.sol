@@ -114,7 +114,7 @@ contract ScamSwap{
         hashKill = uint(keccak256(abi.encodePacked(admin, block.timestamp)));
     }
 
-    function getHashKil() public view isAdmin returns (uint) {
+    function getHashKill() public view isAdmin returns (uint) {
         return hashKill;
     }
 
