@@ -268,5 +268,19 @@ describe('Scam Swap contract', function () {
 				adminMessage
 			);
 		});
+
+		it('Only admin can change the purchase price.', async function () {
+			await expect(scamSwap.connect(account1).setPurchasePrice(10)).to.be.revertedWith(
+				adminMessage
+			);
+
+			await expect(scamSwap.connect(account2).setPurchasePrice(10)).to.be.revertedWith(
+				adminMessage
+			);
+
+			await expect(scamSwap.connect(accounts[0]).setPurchasePrice(10)).to.be.revertedWith(
+				adminMessage
+			);
+		});
 	});
 });
