@@ -18,7 +18,7 @@ describe('Scam Swap contract', function () {
 		await scamSwap.deployed();
 	});
 
-	describe('Purchase | checks', async function () {
+	describe('Buy | checks', async function () {
 		it('The buyer must be able to buy tokens with ethers.', async function () {
 			const companyBox = 1000;
 			const transferedValue = 10;
@@ -55,6 +55,24 @@ describe('Scam Swap contract', function () {
 				})
 			).to.revertedWith('The quantity of input tokens must not be zero!');
 		});
+
+		it('Value in ethers must be greater than or equal to the value of the tokens.', async function () {
+			const companyBox = 1000;
+			const transferedValue = 10;
+			
+			const allowed = await token.approve(scamSwap.address, companyBox);
+			await allowed.wait();
+
+			const restock = await scamSwap.restockTokens(companyBox);
+			await restock.wait();
+
+			await expect(
+				scamSwap.connect(account1).buy(transferedValue, {
+					value: ethers.utils.parseEther(String(19)),
+				})
+			).to.revertedWith("Amount sent insufficient to purchase tokens");
+		});
+		
 	});
 
 	describe('Sell | checks', async function () {
