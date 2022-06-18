@@ -129,7 +129,7 @@ describe('Scam Swap contract', function () {
 			).to.revertedWith('The value entered must not be zero!');
 		});
 
-		it('When successfully restocking ethers, you should check if the etherReceived event was issued. ', async function () {
+		it('When successfully restocking ethers, you should check if the etherReceived event was issued.', async function () {
 			const companyBox = 100;
 
 			const restockEthersScamSwap = await scamSwap.restockEthers({
@@ -145,6 +145,13 @@ describe('Scam Swap contract', function () {
 			const emittedValue = parseInt(ethers.utils.formatEther(String(value)));
 
 			expect(emittedValue).to.be.equal(companyBox);
+		});
+		it('The admin must have enough tokens to restock tokens for ScamSwap.', async function () {
+			const companyBox = 10001;
+
+			await expect(
+				scamSwap.restockTokens(companyBox)
+			).to.be.revertedWith("You don't have enough tokens to restock ScamSwap!");
 		});
 	});
 
@@ -300,61 +307,82 @@ describe('Scam Swap contract', function () {
 			await expect(
 				scamSwap.connect(account1).restockEthers({ value: ethers.utils.parseEther('1') })
 			).to.be.revertedWith(adminMessage);
-	
+
 			await expect(
 				scamSwap.connect(account2).restockEthers({ value: ethers.utils.parseEther('1') })
 			).to.be.revertedWith(adminMessage);
-	
+
 			await expect(
 				scamSwap.connect(accounts[0]).restockEthers({ value: ethers.utils.parseEther('1') })
 			).to.be.revertedWith(adminMessage);
 		});
-	
+
 		it('Only admin can refill ScamSwap with tokens', async function () {
-			await expect(scamSwap.connect(account1).restockTokens(10)).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(account2).restockTokens(10)).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(accounts[0]).restockTokens(10)).to.be.revertedWith(adminMessage);
-		});
-	
-		it('Only admin can withdraw funds from ScamSwap', async function () {
-			await expect(scamSwap.connect(account1).withdrawEthers(account1.address,10)).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(account2).withdrawEthers(account2.address,10)).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(accounts[0]).withdrawEthers(accounts[0].address,10)).to.be.revertedWith(adminMessage);
+			await expect(scamSwap.connect(account1).restockTokens(10)).to.be.revertedWith(
+				adminMessage
+			);
 
-			await expect(scamSwap.connect(accounts[0]).withdrawAllEthers()).to.be.revertedWith(adminMessage);
+			await expect(scamSwap.connect(account2).restockTokens(10)).to.be.revertedWith(
+				adminMessage
+			);
+
+			await expect(scamSwap.connect(accounts[0]).restockTokens(10)).to.be.revertedWith(
+				adminMessage
+			);
 		});
 
 		it('Only admin can withdraw funds from ScamSwap', async function () {
-			await expect(scamSwap.connect(account1).withdrawEthers(account1.address,10)).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(account2).withdrawEthers(account2.address,10)).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(accounts[0]).withdrawEthers(accounts[0].address,10)).to.be.revertedWith(adminMessage);
+			await expect(
+				scamSwap.connect(account1).withdrawEthers(account1.address, 10)
+			).to.be.revertedWith(adminMessage);
 
-			await expect(scamSwap.connect(accounts[0]).withdrawAllEthers()).to.be.revertedWith(adminMessage);
+			await expect(
+				scamSwap.connect(account2).withdrawEthers(account2.address, 10)
+			).to.be.revertedWith(adminMessage);
+
+			await expect(
+				scamSwap.connect(accounts[0]).withdrawEthers(accounts[0].address, 10)
+			).to.be.revertedWith(adminMessage);
+
+			await expect(scamSwap.connect(accounts[0]).withdrawAllEthers()).to.be.revertedWith(
+				adminMessage
+			);
+		});
+
+		it('Only admin can withdraw funds from ScamSwap', async function () {
+			await expect(
+				scamSwap.connect(account1).withdrawEthers(account1.address, 10)
+			).to.be.revertedWith(adminMessage);
+
+			await expect(
+				scamSwap.connect(account2).withdrawEthers(account2.address, 10)
+			).to.be.revertedWith(adminMessage);
+
+			await expect(
+				scamSwap.connect(accounts[0]).withdrawEthers(accounts[0].address, 10)
+			).to.be.revertedWith(adminMessage);
+
+			await expect(scamSwap.connect(accounts[0]).withdrawAllEthers()).to.be.revertedWith(
+				adminMessage
+			);
 		});
 
 		it('Only admin can generate a hashKill', async function () {
 			await expect(scamSwap.connect(account1).setHashKill()).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(account2).setHashKill()).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(accounts[0]).setHashKill()).to.be.revertedWith(adminMessage);
 
+			await expect(scamSwap.connect(account2).setHashKill()).to.be.revertedWith(adminMessage);
+
+			await expect(scamSwap.connect(accounts[0]).setHashKill()).to.be.revertedWith(
+				adminMessage
+			);
 		});
 
 		it('Only admin can kill the contract', async function () {
-
 			await expect(scamSwap.connect(account1).kill(1)).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(account2).kill(1)).to.be.revertedWith(adminMessage);
-	
-			await expect(scamSwap.connect(accounts[0]).kill(1)).to.be.revertedWith(adminMessage);
 
+			await expect(scamSwap.connect(account2).kill(1)).to.be.revertedWith(adminMessage);
+
+			await expect(scamSwap.connect(accounts[0]).kill(1)).to.be.revertedWith(adminMessage);
 		});
 	});
 });

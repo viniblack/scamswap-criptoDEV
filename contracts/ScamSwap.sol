@@ -64,8 +64,8 @@ contract ScamSwap{
    
     function restockTokens(uint256 amountTokens) public isAdmin{
         require(amountTokens > 0 , "The value entered must not be zero!"); 
-        require(getBalanceTokensForAddress(msg.sender) >= amountTokens , "Nao tem tokens suficiente!");  
-        require(Scamcoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens), "Tranferencia de tokens falhou!");
+        require(getBalanceTokensForAddress(msg.sender) >= amountTokens , "You don't have enough tokens to restock ScamSwap!");  
+        Scamcoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens);
     }
 
     function sell(uint256 amountTokens) public payable{
