@@ -59,7 +59,7 @@ describe('Scam Swap contract', function () {
 		it('Value in ethers must be greater than or equal to the value of the tokens.', async function () {
 			const companyBox = 1000;
 			const transferedValue = 10;
-			
+
 			const allowed = await token.approve(scamSwap.address, companyBox);
 			await allowed.wait();
 
@@ -274,6 +274,29 @@ describe('Scam Swap contract', function () {
 			expect(await scamSwap.getBalanceAddress(owner.address)).to.be.equal(
 				currentBalanceOwner
 			);
+		});
+
+		it('You should not be able to withdraw if there is no balance.', async function () {
+
+			await expect(scamSwap.withdrawAllEthers()).to.be.revertedWith("The ScamSwap wallet has no ethers!")
+		});
+
+		it('You should not be able to withdraw if there is no balance.', async function () {
+
+			await expect(scamSwap.withdrawEthers(owner.address, 10)).to.be.revertedWith("The ScamSwap's wallet has no ethers!")
+		});
+
+		it('You should not be able to withdraw if there is no balance.', async function () {
+			const companyBox = 100;
+
+
+			const restockEthersScamSwap = await scamSwap.restockEthers({
+				value: ethers.utils.parseEther(String(companyBox)),
+			});
+
+			await restockEthersScamSwap.wait()
+
+			await expect(scamSwap.withdrawEthers(owner.address, companyBox+1)).to.be.revertedWith("The ScamSwap wallet does not have the required amount of ethers for withdrawal!")
 		});
 	});
 

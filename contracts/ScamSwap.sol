@@ -93,15 +93,15 @@ contract ScamSwap{
     } 
 
     function withdrawEthers(address addressReceive, uint256 amountEthers) public isAdmin payable{
-        require(amountEthers > 0 , "O valor de Ethers para sacar nao pode ser zero!");
-        require(address(this).balance > 0, "A carteira da Vending Machine nao possui Ethers!");
-        require(address(this).balance >= amountEthers * 1 ether, "A carteira da Vending Machine nao possui a quantidade de Ethers solicitados para o saque!");
+        require(amountEthers > 0 , "You cannot withdraw zero value!");
+        require(address(this).balance > 0, "The ScamSwap's wallet has no ethers!");
+        require(address(this).balance >= amountEthers * 1 ether, "The ScamSwap wallet does not have the required amount of ethers for withdrawal!");
         payable(addressReceive).transfer(amountEthers * 1 ether);
         //todo colocar evento
     }
 
     function withdrawAllEthers() public isAdmin payable{
-        require(address(this).balance > 0, "A carteira da Vending Machine nao possui Ethers!");
+        require(address(this).balance > 0, "The ScamSwap wallet has no ethers!");
         payable(msg.sender).transfer(address(this).balance);
         //todo colocar evento
     }
