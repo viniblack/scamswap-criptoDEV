@@ -90,7 +90,7 @@ contract ScamSwap{
         require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Not enough tokens on ScamSwap to buy!");
         require(msg.value >= amountTokens * purchasePrice, "Amount sent insufficient to purchase tokens");
         Scamcoin(tokenAddress).transfer( msg.sender, amountTokens);
-        //Devolve o troco se o usuário, se enviou um valor maior do que deveria seer pago!
+        //Devolve o troco se o usuário, se enviou um valor maior do que deveria ser pago!
         if(msg.value > (amountTokens * purchasePrice)){
            uint256  payback = msg.value - (amountTokens * purchasePrice);
            payable(msg.sender).transfer(payback);
