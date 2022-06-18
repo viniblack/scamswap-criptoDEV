@@ -72,13 +72,13 @@ contract ScamSwap{
         require(amountTokens > 0 , "The quantity of input tokens must not be zero!");
         require(getBalanceTokensForAddress(msg.sender) > 0, "User wallet has no tokens!");
         require(getBalanceTokensForAddress(msg.sender) >= amountTokens, "There are not enough tokens in the wallet for the sale!");
-        require(address(this).balance >= amountTokens * salesPrice, "Insuficiente saldo de ethers na Vending Machine");     
-        require(Scamcoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens), "Tranferencia de tokens falhou!");
+        require(address(this).balance >= amountTokens * salesPrice, "Insufficient ethers balance at ScamSwap");     
+        Scamcoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens);
         payable(msg.sender).transfer(amountTokens * salesPrice);
         //todo colocar evento
     } 
        
-    function purchase(uint256 amountTokens) public payable{
+    function buy(uint256 amountTokens) public payable{
         require(amountTokens > 0 , "The quantity of input tokens must not be zero!");
         
         require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Not enough tokens on ScamSwap to buy!");

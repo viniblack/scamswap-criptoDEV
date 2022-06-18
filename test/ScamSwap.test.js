@@ -28,7 +28,7 @@ describe('Scam Swap contract', function () {
 			const restock = await scamSwap.restockTokens(companyBox);
 			await restock.wait();
 
-			const transactionOne = await scamSwap.connect(account1).purchase(transferedValue, {
+			const transactionOne = await scamSwap.connect(account1).buy(transferedValue, {
 				value: ethers.utils.parseEther(String(transferedValue * 2)),
 			});
 
@@ -41,7 +41,7 @@ describe('Scam Swap contract', function () {
 		it('It should not be possible to buy tokens with zero value.', async function () {
 			const transferedValue = 10;
 			await expect(
-				scamSwap.connect(account1).purchase(transferedValue, {
+				scamSwap.connect(account1).buy(transferedValue, {
 					value: ethers.utils.parseEther(String(0)),
 				})
 			).to.revertedWith('Not enough tokens on ScamSwap to buy!');
@@ -50,14 +50,14 @@ describe('Scam Swap contract', function () {
 		it('It is not possible to buy zero tokens', async function () {
 			const transferedValue = 0;
 			await expect(
-				scamSwap.connect(account1).purchase(transferedValue, {
+				scamSwap.connect(account1).buy(transferedValue, {
 					value: ethers.utils.parseEther(String(10)),
 				})
 			).to.revertedWith('The quantity of input tokens must not be zero!');
 		});
 	});
 
-	describe('Sales | checks', async function () {
+	describe('Sell | checks', async function () {
 		it('The seller must be able to sell tokens for ethers.', async function () {
 			const companyBox = 1000;
 			const transferedValue = 10;
@@ -67,7 +67,7 @@ describe('Scam Swap contract', function () {
 			const restock = await scamSwap.restockTokens(companyBox);
 			await restock.wait();
 
-			const purchaseTransaction = await scamSwap.connect(account1).purchase(transferedValue, {
+			const purchaseTransaction = await scamSwap.connect(account1).buy(transferedValue, {
 				value: ethers.utils.parseEther(String(transferedValue * 2)),
 			});
 
@@ -90,6 +90,55 @@ describe('Scam Swap contract', function () {
 			const transferedValue = 0;
 			await expect(scamSwap.connect(account1).sell(transferedValue)).to.revertedWith(
 				'The quantity of input tokens must not be zero!'
+			);
+		});
+
+		it('You must have a greater or equal amount of tokens on the balance sheet to be able to sell.', async function () {
+			const transferedValue = 10;
+			const tokensToAccounts = await token.transfer(account1.address, 5);
+			await tokensToAccounts.wait();
+			await expect(scamSwap.connect(account1).sell(transferedValue)).to.revertedWith(
+				"There are not enough tokens in the wallet for the sale!"
+			);
+		});
+
+		it('They should not be able to sell tokens, if they want to sell more tokens than they have.', async function () {
+			const companyBox = 100;
+			const transferedValue = 5;
+
+			const allowed = await token.approve(scamSwap.address, companyBox);
+			await allowed.wait();
+
+			const restockTokensScamSwap = await scamSwap.restockTokens(companyBox);
+			await restockTokensScamSwap.wait();
+
+			const restockEthersScamSwap = await scamSwap.restockEthers({
+				value: ethers.utils.parseEther(String(companyBox)),
+			});
+			await restockEthersScamSwap.wait();
+
+			const buyTokens = await scamSwap.connect(account1).buy(transferedValue,{value: ethers.utils.parseEther(String(transferedValue*2))})
+			await buyTokens.wait();
+			await expect(scamSwap.connect(account1).sell(transferedValue + 1)).to.revertedWith(
+				"There are not enough tokens in the wallet for the sale!"
+			);
+		});
+
+		it('Should not be able to sell tokens if SwapSwap does not have enough ethers.', async function () {
+			const companyBox = 100;
+			const transferedValue = 5;
+
+			const allowed = await token.approve(scamSwap.address, companyBox);
+			await allowed.wait();
+
+			const restockTokensScamSwap = await scamSwap.restockTokens(companyBox);
+			await restockTokensScamSwap.wait();
+
+			const buyTokens = await scamSwap.buy(transferedValue,{value: ethers.utils.parseEther(String(transferedValue*2))})
+			await buyTokens.wait();
+
+			await expect(scamSwap.sell(transferedValue*4)).to.revertedWith(
+				"Insufficient ethers balance at ScamSwap"
 			);
 		});
 	});
@@ -167,18 +216,18 @@ describe('Scam Swap contract', function () {
 
 			const purchaseTransaction1 = await scamSwap
 				.connect(account1)
-				.purchase(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
+				.buy(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
 
 			await purchaseTransaction1.wait();
 
 			const purchaseTransaction2 = await scamSwap
 				.connect(account2)
-				.purchase(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
+				.buy(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
 			await purchaseTransaction2.wait();
 
 			const purchaseTransaction3 = await scamSwap
 				.connect(accounts[0])
-				.purchase(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
+				.buy(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
 			await purchaseTransaction3.wait();
 
 			const withdraw1 = await scamSwap.withdrawEthers(owner.address, 50);
