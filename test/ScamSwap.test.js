@@ -2,10 +2,12 @@ const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
 describe('Scam Swap contract', function () {
-	let owner, account1, account2, accounts, token, scamSwap;
+	let owner, account1, account2, accounts, token, scamSwap, adminMessage;
 
 	beforeEach(async () => {
 		[owner, account1, account2, ...accounts] = await ethers.getSigners();
+
+		adminMessage = 'Sender is not admin!';
 
 		const Scamcoin = await ethers.getContractFactory('Scamcoin');
 		token = await Scamcoin.deploy(10000);
@@ -20,7 +22,7 @@ describe('Scam Swap contract', function () {
 		it('The buyer must be able to buy tokens with ethers.', async function () {
 			const companyBox = 1000;
 			const transferedValue = 10;
-			const allowed = await token.approve(scamSwap.address, companyBox)
+			const allowed = await token.approve(scamSwap.address, companyBox);
 			await allowed.wait();
 
 			const restock = await scamSwap.restockTokens(companyBox);
@@ -59,7 +61,7 @@ describe('Scam Swap contract', function () {
 		it('The seller must be able to sell tokens for ethers.', async function () {
 			const companyBox = 1000;
 			const transferedValue = 10;
-			const allowed = await token.approve(scamSwap.address, companyBox)
+			const allowed = await token.approve(scamSwap.address, companyBox);
 			await allowed.wait();
 
 			const restock = await scamSwap.restockTokens(companyBox);
@@ -73,10 +75,12 @@ describe('Scam Swap contract', function () {
 
 			expect(await token.balanceOf(account1.address)).to.equal(transferedValue);
 
-			const allowedOne = await token.connect(account1).approve(scamSwap.address, transferedValue)
+			const allowedOne = await token
+				.connect(account1)
+				.approve(scamSwap.address, transferedValue);
 			await allowedOne.wait();
 
-			const salesTransaction = await scamSwap.connect(account1).sales(transferedValue);
+			const salesTransaction = await scamSwap.connect(account1).sell(transferedValue);
 			salesTransaction.wait();
 
 			expect(await token.balanceOf(account1.address)).to.equal(0);
@@ -84,7 +88,7 @@ describe('Scam Swap contract', function () {
 
 		it('It should not be possible to sell tokens with zero value.', async function () {
 			const transferedValue = 0;
-			await expect(scamSwap.connect(account1).sales(transferedValue)).to.revertedWith(
+			await expect(scamSwap.connect(account1).sell(transferedValue)).to.revertedWith(
 				'The quantity of input tokens must not be zero!'
 			);
 		});
@@ -94,7 +98,7 @@ describe('Scam Swap contract', function () {
 		it('The administrator must be able to replenish the machine with tokens and ethers.', async function () {
 			const companyBox = 100;
 
-			const allowed = await token.approve(scamSwap.address, companyBox)
+			const allowed = await token.approve(scamSwap.address, companyBox);
 			await allowed.wait();
 
 			const restockTokensScamSwap = await scamSwap.restockTokens(companyBox);
@@ -149,7 +153,7 @@ describe('Scam Swap contract', function () {
 			const companyBox = 100;
 			const beforeWithdraw = await scamSwap.getBalanceAddress(owner.address);
 
-			const allowed = await token.approve(scamSwap.address, 1000)
+			const allowed = await token.approve(scamSwap.address, 1000);
 			await allowed.wait();
 			const restock = await scamSwap.restockTokens(1000);
 			await restock.wait();
@@ -230,7 +234,6 @@ describe('Scam Swap contract', function () {
 	});
 
 	describe('Kill and HashKill | checks', async function () {
-
 		it('You should not be able to kill with an invalid hashKill.', async function () {
 			const firstHK = await scamSwap.setHashKill();
 			await firstHK.wait();
@@ -248,6 +251,22 @@ describe('Scam Swap contract', function () {
 			expect(await scamSwap.getHashKill()).not.be.equal(hashKill1);
 			expect(await scamSwap.getHashKill()).not.be.equal(hashKill2);
 			expect(await scamSwap.getHashKill()).not.be.equal(0);
+		});
+	});
+
+	describe('IsAdmin | checks', async function () {
+		it('Only admin can change the sales price.', async function () {
+			await expect(scamSwap.connect(account1).setSalesPrice(10)).to.be.revertedWith(
+				adminMessage
+			);
+
+			await expect(scamSwap.connect(account2).setSalesPrice(10)).to.be.revertedWith(
+				adminMessage
+			);
+
+			await expect(scamSwap.connect(accounts[0]).setSalesPrice(10)).to.be.revertedWith(
+				adminMessage
+			);
 		});
 	});
 });
