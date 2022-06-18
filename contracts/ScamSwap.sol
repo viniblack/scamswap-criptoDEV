@@ -1,14 +1,26 @@
 import "./Scamcoin.sol";
-// SPDX-License-Identifier: GPL-3.0
 
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
 contract ScamSwap{
+
+    //Properties
     address payable private admin;
     uint256 private salesPrice =  1 ether;
     uint256 private purchasePrice = 2 ether; 
-    address public tokenAddress;
     uint private hashKill;
+    address public tokenAddress;
+
+    // Modifiers
+    modifier isAdmin() {
+        require(msg.sender == admin , "Sender is not admin!");
+        _;
+    }
+
+    // Events
+    event Received(address, uint);
+    event ethersReceived(uint256);
 
     constructor(address token){
         admin = payable(msg.sender);
@@ -16,12 +28,8 @@ contract ScamSwap{
         setHashKill();
     }
 
-    event Received(address, uint);
-    event ethersReceived(uint256);
-
-    modifier isAdmin() {
-        require(msg.sender == admin , "Sender is not admin!");
-        _;
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
     }
 
     function getBalanceTokens() public view returns (uint256) {
@@ -33,7 +41,7 @@ contract ScamSwap{
     }
 
     function getBalanceEthers() public view returns (uint256) {
-         return address(this).balance / 1 ether;
+        return address(this).balance / 1 ether;
     }
 
      function getSalesPrice() public view returns (uint256) {
@@ -58,8 +66,8 @@ contract ScamSwap{
     
     function restockEthers() public isAdmin payable{
         require(msg.value > 0 , "The value entered must not be zero!");
+
         emit ethersReceived(msg.value);
-        //todo colocar evento
     }
    
     function restockTokens(uint256 amountTokens) public isAdmin{
@@ -75,12 +83,10 @@ contract ScamSwap{
         require(address(this).balance >= amountTokens * salesPrice, "Insufficient ethers balance at ScamSwap");     
         Scamcoin(tokenAddress).transferFrom(msg.sender, address(this), amountTokens);
         payable(msg.sender).transfer(amountTokens * salesPrice);
-        //todo colocar evento
     } 
        
     function buy(uint256 amountTokens) public payable{
         require(amountTokens > 0 , "The quantity of input tokens must not be zero!");
-        
         require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Not enough tokens on ScamSwap to buy!");
         require(msg.value >= amountTokens * purchasePrice, "Amount sent insufficient to purchase tokens");
         Scamcoin(tokenAddress).transfer( msg.sender, amountTokens);
@@ -89,7 +95,6 @@ contract ScamSwap{
            uint256  payback = msg.value - (amountTokens * purchasePrice);
            payable(msg.sender).transfer(payback);
         }    
-         //todo colocar evento
     } 
 
     function withdrawEthers(address addressReceive, uint256 amountEthers) public isAdmin payable{
@@ -97,17 +102,11 @@ contract ScamSwap{
         require(address(this).balance > 0, "The ScamSwap's wallet has no ethers!");
         require(address(this).balance >= amountEthers * 1 ether, "The ScamSwap wallet does not have the required amount of ethers for withdrawal!");
         payable(addressReceive).transfer(amountEthers * 1 ether);
-        //todo colocar evento
     }
 
     function withdrawAllEthers() public isAdmin payable{
         require(address(this).balance > 0, "The ScamSwap wallet has no ethers!");
         payable(msg.sender).transfer(address(this).balance);
-        //todo colocar evento
-    }
-
-    receive() external payable {
-        emit Received(msg.sender, msg.value);
     }
 
     function setHashKill() public isAdmin{
@@ -124,5 +123,3 @@ contract ScamSwap{
         selfdestruct(payable(admin));
     } 
 }
-
-

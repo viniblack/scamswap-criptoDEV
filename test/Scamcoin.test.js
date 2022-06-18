@@ -30,6 +30,15 @@ describe("Scamcoin contract", function () {
     })
   });
 
+  describe("Permissions | checks", function () {
+    it("checking owner permissions", async function () {
+      expect(token.connect(account1).mint(1000)).to.be.revertedWith("Sender is not owner!")
+      expect(token.connect(account1).burn(1000)).to.be.revertedWith("Sender is not owner!")
+      expect(token.connect(account1).kill()).to.be.revertedWith("Sender is not owner!")
+      expect(token.connect(account1).setState(1)).to.be.revertedWith("Sender is not owner!", )
+    })
+  });
+
   describe("Transfer | checks", function () {
     it("checking the transfer, if you are subtracting the value of the sent and adding the receiver", async function () {
 
@@ -232,15 +241,6 @@ describe("Scamcoin contract", function () {
       const confirmation = kill.confirmations
 
       expect(confirmation == 1).to.equal(true)
-    })
-  });
-
-  describe("Permissions | checks", function () {
-    it("checking owner permissions", async function () {
-      expect(token.connect(account1).mint(1000)).to.be.revertedWith("Sender is not owner!")
-      expect(token.connect(account1).burn(1000)).to.be.revertedWith("Sender is not owner!")
-      expect(token.connect(account1).kill()).to.be.revertedWith("Sender is not owner!")
-      expect(token.connect(account1).setState(1)).to.be.revertedWith("Sender is not owner!", )
     })
   });
 });
