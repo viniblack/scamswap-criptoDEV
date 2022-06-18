@@ -81,7 +81,7 @@ contract ScamSwap{
     function purchase(uint256 amountTokens) public payable{
         require(amountTokens > 0 , "The quantity of input tokens must not be zero!");
         
-        require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Insuficiente quantidade de tokens na Vendi Machine para a compra!");
+        require(getBalanceTokensForAddress(address(this)) >= amountTokens, "Not enough tokens on ScamSwap to buy!");
         require(msg.value >= amountTokens * purchasePrice, "Valor enviado insuficiente para a compra");
         require(Scamcoin(tokenAddress).transfer( msg.sender, amountTokens), "Tranferencia de tokens falhou!");
         //Devolve o troco se o usuário, se enviou um valor maior do que deveria seer pago!

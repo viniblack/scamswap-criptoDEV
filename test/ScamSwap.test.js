@@ -20,6 +20,9 @@ describe('Scam Swap contract', function () {
 		it('The buyer must be able to buy tokens with ethers.', async function () {
 			const companyBox = 1000;
 			const transferedValue = 10;
+			const allowed = await token.approve(scamSwap.address, companyBox)
+			await allowed.wait();
+
 			const restock = await scamSwap.restockTokens(companyBox);
 			await restock.wait();
 
@@ -39,7 +42,7 @@ describe('Scam Swap contract', function () {
 				scamSwap.connect(account1).purchase(transferedValue, {
 					value: ethers.utils.parseEther(String(0)),
 				})
-			).to.revertedWith('The value entered must not be zero!');
+			).to.revertedWith('Not enough tokens on ScamSwap to buy!');
 		});
 
 		it('It is not possible to buy zero tokens', async function () {
@@ -56,6 +59,9 @@ describe('Scam Swap contract', function () {
 		it('The seller must be able to sell tokens for ethers.', async function () {
 			const companyBox = 1000;
 			const transferedValue = 10;
+			const allowed = await token.approve(scamSwap.address, companyBox)
+			await allowed.wait();
+
 			const restock = await scamSwap.restockTokens(companyBox);
 			await restock.wait();
 
@@ -66,6 +72,9 @@ describe('Scam Swap contract', function () {
 			await purchaseTransaction.wait();
 
 			expect(await token.balanceOf(account1.address)).to.equal(transferedValue);
+
+			const allowedOne = await token.connect(account1).approve(scamSwap.address, transferedValue)
+			await allowedOne.wait();
 
 			const salesTransaction = await scamSwap.connect(account1).sales(transferedValue);
 			salesTransaction.wait();
@@ -84,6 +93,9 @@ describe('Scam Swap contract', function () {
 	describe('Restock | checks', async function () {
 		it('The administrator must be able to replenish the machine with tokens and ethers.', async function () {
 			const companyBox = 100;
+
+			const allowed = await token.approve(scamSwap.address, companyBox)
+			await allowed.wait();
 
 			const restockTokensScamSwap = await scamSwap.restockTokens(companyBox);
 			await restockTokensScamSwap.wait();
@@ -136,6 +148,9 @@ describe('Scam Swap contract', function () {
 		it('The admin must be able to withdraw the balance in ethers', async function () {
 			const companyBox = 100;
 			const beforeWithdraw = await scamSwap.getBalanceAddress(owner.address);
+
+			const allowed = await token.approve(scamSwap.address, 1000)
+			await allowed.wait();
 			const restock = await scamSwap.restockTokens(1000);
 			await restock.wait();
 
@@ -143,7 +158,6 @@ describe('Scam Swap contract', function () {
 				.connect(account1)
 				.purchase(companyBox / 2, { value: ethers.utils.parseEther(String(companyBox)) });
 
-			console.log(ethers.utils.parseEther(String(companyBox)));
 			await purchaseTransaction1.wait();
 
 			const purchaseTransaction2 = await scamSwap
