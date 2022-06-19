@@ -91,7 +91,7 @@ contract Scamcoin is IERC20 {
     function transferFrom(address sender, address recipient, uint256 amount)public isActive override returns(bool) {
         require(amount > 0, "Tranfer value invalid is not zero.");
         require(amount <= balanceOf(sender), "Insufficient Balance to Transfer");
-        require(amount <= allowed[sender][msg.sender], "Falhou no allowed");
+        require(amount <= allowed[sender][msg.sender], "No allowed");
 
         addressToBalance[sender] -= amount;
         allowed[sender][msg.sender] -= amount;
@@ -102,7 +102,7 @@ contract Scamcoin is IERC20 {
     }
 
     function increaseAllowance(address spender, uint256 addedValue) public override returns (bool){
-        require(spender != address(0), "End.. invalido!");
+        require(spender != address(0), "Invalid address!");
 
         allowed[msg.sender][spender] +=  addedValue;
 
@@ -111,7 +111,7 @@ contract Scamcoin is IERC20 {
     }
 
    function decreaseAllowance(address spender, uint256 subtractedValue) public override returns (bool) {
-        require(spender != address(0));
+        require(spender != address(0), "Invalid address!");
 
         allowed[msg.sender][spender] -= subtractedValue;
 
