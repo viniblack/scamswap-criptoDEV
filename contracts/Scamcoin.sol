@@ -7,9 +7,9 @@ interface IERC20 {
     function totalSupply() external view returns(uint256);
     function balanceOf(address account) external view returns(uint256);
     function transfer(address recipient, uint256 amount) external returns(bool);
-    function transferFrom(address from, address to, uint256 amount) external returns (bool);
-    function approve(address spender, uint256 amount) external returns (bool);
     function allowance(address owner, address spender) external view returns (uint256);
+    function approve(address spender, uint256 amount) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
     function increaseAllowance(address spender, uint256 addedValue) external  returns (bool) ;
     function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) ;
 
@@ -67,17 +67,40 @@ contract Scamcoin is IERC20 {
         return addressToBalance[tokenOwner];
     }
 
-    function approve(address delegate, uint256 numTokens) public override returns (bool) {
-        allowed[msg.sender][delegate] = numTokens;
+    function transfer(address recipient, uint256 amount) public isActive override returns(bool) {
+        require(amount <= addressToBalance[msg.sender], "Insufficient Balance to Transfer");
 
-        emit Approval(msg.sender, delegate, numTokens);
+        addressToBalance[msg.sender] -= amount;
+        addressToBalance[recipient] += amount;
+
+        emit Transfer(msg.sender, recipient, amount);
         return true;
     }
 
-    function allowance(address from, address delegate) public override view returns (uint) {
-        return allowed[from][delegate];
+    function allowance(address from, address spender) public override view returns (uint) {
+        return allowed[from][spender];
     }
     
+    function approve(address spender, uint256 amount) public override returns (bool) {
+        allowed[msg.sender][spender] = amount;
+
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+
+    function transferFrom(address sender, address recipient, uint256 amount)public isActive override returns(bool) {
+        require(amount > 0, "Tranfer value invalid is not zero.");
+        require(amount <= balanceOf(sender), "Insufficient Balance to Transfer");
+        require(amount <= allowed[sender][msg.sender], "Falhou no allowed");
+
+        addressToBalance[sender] -= amount;
+        allowed[sender][msg.sender] -= amount;
+        addressToBalance[recipient] += amount;
+
+        emit Transfer(sender, recipient, amount);
+        return true;
+    }
+
     function increaseAllowance(address spender, uint256 addedValue) public override returns (bool){
         require(spender != address(0), "End.. invalido!");
 
@@ -95,30 +118,7 @@ contract Scamcoin is IERC20 {
         emit Approval(msg.sender, spender, allowed[msg.sender][spender]);
         return true;
     }
-
-    function transfer(address receiver, uint256 quantity) public isActive override returns(bool) {
-        require(quantity <= addressToBalance[msg.sender], "Insufficient Balance to Transfer");
-
-        addressToBalance[msg.sender] -= quantity;
-        addressToBalance[receiver] += quantity;
-
-        emit Transfer(msg.sender, receiver, quantity);
-        return true;
-    }
-    
-    function transferFrom(address from, address to, uint256 amount)public isActive override returns(bool) {
-        require(amount > 0, "Tranfer value invalid is not zero.");
-        require(amount <= balanceOf(from), "Insufficient Balance to Transfer");
-        require(amount <= allowed[from][msg.sender], "Falhou no allowed");
-
-        addressToBalance[from] -= amount;
-        allowed[from][msg.sender] -= amount;
-        addressToBalance[to] += amount;
-
-        emit Transfer(from, to, amount);
-        return true;
-    }
-
+ 
     function state() public view returns(Status) {
         return contractState;
     }
