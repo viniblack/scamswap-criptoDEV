@@ -22,10 +22,11 @@ $ npx hardhat compile
 # Executar os testes
 $ npx hardhat test
 ```
+---
 
 ## 📝 Sobre as funcionalidades
 ### 🪙 Scancoin
-Para implantar o contrato deve ser passado o valor total de tokens (`totalSupply`), o endereço que realizar a implantação será o proprietário do contrato.
+Para implantar o contrato do **scancoin** deve ser passado o valor total de tokens (`totalSupply`), o endereço que realizar a implantação será o proprietário do contrato.
 
 Apenas o proprietário do contrato pode:
 * Cunhar moedas;
@@ -56,5 +57,57 @@ O contrato pode realizar as seguintes operações:
 * `burn(amount)`: Realiza a queima da quantidade de tokens informada diminuindo do `totalsupply`;
 * `setState(status)`: Altera o estado de acordo com o número informado;
 * `kill()`: Finaliza o contrato;
----
+
 ### 🎰 Scamswap
+Para implantar o contrato **scamswap** deve ser passado o endereço do contrato **scamcoin**.
+
+Apenas o proprietário do contrato pode:
+* Finalizar o contrato;
+* Definir o valor de venda do token;
+* Definir o valor de compra do token;
+* Reabastecer este contrato com mais ethers;
+* Reabastecer este contrato com mais tokens;
+* Retirar uma quantidade determinada de ethers deste contrato;
+* Retirar todos os ethers deste contrato;
+* Gerar o hash para finalizar o contrato;
+* Obter o hash para finalizar o contrato;
+
+O contrato pode realizar as seguintes operações:
+
+* `restockEthers`: Reabastecer este contrato com mais ethers;
+* `restockTokens`: Reabastecer este contrato com mais tokens;
+* `sell`: Vende tokens por ethers;
+* `buy`: Compra tokens por ethers;
+* `withdrawEthers`: Retirar uma quantidade determinada de ethers deste contrato;
+* `withdrawAllEthers`: Retirar todos os ethers deste contrato;
+* `setSalesPrice`: Definir o valor de venda do token;
+* `setPurchasePrice`: Definir o valor de compra do token;
+* `setHashKill`: Gerar o hash para finalizar o contrato;
+* `getBalanceTokens`:  Verifica saldo de tokens do contrato;
+* `getBalanceTokensForAddress`: Verifica saldo de tokens do endereço informado;
+* `getBalanceAddress`: Verifica saldo de ethers do endereço informado;
+* `getBalanceEthers`: Verifica saldo de ethers do contrato;
+* `getSalesPrice`: Verifica o valor de venda do token;
+* `getPurchasePrice`: Verifica o valor de compra do token;
+* `getHashKill`: Obter o hash para finalizar o contrato;
+* `kill`: Finaliza o contrato;
+
+---
+## 🛠 Tecnologias
+
+As seguintes ferramentas foram usadas na construção do projeto:
+
+- [Solidity](https://docs.soliditylang.org/en/v0.8.14/)
+- [Node.js](https://nodejs.org/en/)
+- [Hardhat](https://hardhat.org/)
+
+## 👨‍💻 Membros do projeto
+* [Anderson Dantas](https://github.com/andersondantas81)
+* [Douglas Melo](https://github.com/Dougmelo)
+* [Gabiel Duarte](https://github.com/xlDuarte)
+* [Kelwin Ladeira](https://github.com/ladeirakelwin)
+* [Vinicius Santana](https://github.com/viniblack)
+
+## 📝 License
+
+Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE.md) para mais detalhes.

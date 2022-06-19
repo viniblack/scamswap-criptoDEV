@@ -26,7 +26,7 @@ contract Scamcoin is IERC20 {
     //Properties
     address private owner;
     string public constant name = "Scamcoin";
-    string public constant symbol = "SCN";
+    string public constant symbol = "SCM";
     uint8 public constant decimals = 18;
     uint256 private totalsupply;
     Status contractState;
