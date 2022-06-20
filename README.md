@@ -1,10 +1,13 @@
 # 🪙 Scamcoin | Scamswap 🎰
 
 ## Sobre o Projeto
-Projeto criado durante o curso [Cripto Dev](https://criptodev.corporate.gama.academy/), com o objetivo de criar um MVP de uma vending machine onde possamos comprar e vender tokens com Ether. Utilizando `Soliditiy` e todas as suas tecnologias para desenvolver um `Smart Contract` e disponibiliza-las na rede `Ethereum`.
+Projeto criado durante o treinamento [Cripto Dev](https://criptodev.corporate.gama.academy/), com o objetivo de criar um MVP de uma vending machine onde possamos comprar e vender tokens com Ether. Utilizando `Soliditiy` e todas as suas tecnologias para desenvolver um `Smart Contract` e disponibilizá-las na rede `Ethereum`.
+
+### 🤖 Contratos na rede
+No etherscan é possivel ver os contratos [Scancoin](https://ropsten.etherscan.io/tx/0x6151404b778f06561d5bed99b6fbc9da4006f255d0a6b5d35941eac33289146c) e [Scanswap](https://ropsten.etherscan.io/tx/0x1e78edb5fb86351c69906cc7b5d17bfc2c7051fe6fc5d16a8f02a4efd3a74dde) na rede Ropsten Testnet.
 
 ## 🚀 Como executar
-Antes de começar para execultar o projeto é necessário que você tenha o `Node.js` instalado na sua maquina.
+Antes de começar a executar o projeto é necessário que você tenha o `Node.js` instalado na sua máquina.
 
 Clone o projeto e acesse a pasta do mesmo.
 ```bash
@@ -47,8 +50,8 @@ O contrato pode realizar as seguintes operações:
 * `allowance(from, spender)`: Retorna o número restante de tokens que `spender` poderão ser gastos em nome do `owner` no `transferFrom`;
 * `approve(spender, amount)`: Define um limite de tokens que pode ser transferidos;
 * `transferFrom(sender, recipient, amount)`: Realiza uma transferência uma quantidade de tokens de `from` para `to` ;
-* `increaseAllowance(spender, addedValue)`: Aumenta a quantiade permitida de transferencia de tokens concedida ao `spender`;
-* `decreaseAllowance(spender, subtractedValue)`: Diminui a quantiade permitida de transferencia de tokens concedida ao `spender`;
+* `increaseAllowance(spender, addedValue)`: Aumenta a quantiade permitida de transferência de tokens concedida ao `spender`;
+* `decreaseAllowance(spender, subtractedValue)`: Diminui a quantiade permitida de transferência de tokens concedida ao `spender`;
 * `state()`: Verifica o estado do contrato que pode ser:
   * 0: Paused
   * 1: Active
