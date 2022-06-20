@@ -119,7 +119,6 @@ contract ScamSwap{
 
     function kill(uint _hashKill) public isAdmin {
         require(hashKill == _hashKill, "Invalid hashKill!");
-        withdrawAllEthers();
         selfdestruct(payable(admin));
     } 
 }
