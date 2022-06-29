@@ -1,4 +1,5 @@
 # 🪙 Scamcoin | Scamswap 🎰
+[Link da apresentação](https://www.canva.com/design/DAFDyuUv4aY/souKRN9r23DEWTAZn-BTLw/view?utm_content=DAFDyuUv4aY&utm_campaign=designshare&utm_medium=link&utm_source=publishpresent#1)
 
 ## Sobre o Projeto
 Projeto criado durante o treinamento [Cripto Dev](https://criptodev.corporate.gama.academy/), com o objetivo de criar um MVP de uma vending machine onde possamos comprar e vender tokens com Ether. Utilizando `Soliditiy` e todas as suas tecnologias para desenvolver um `Smart Contract` e disponibilizá-las na rede `Ethereum`.
